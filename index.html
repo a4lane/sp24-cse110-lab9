@@ -102,6 +102,48 @@
 
     // Start your code here
     // You may move this JS to another file if you wish
+    errorBtns.forEach((button) => {
+      const text = button.innerText;
+      const words = text.split(" ");
+      if (words[0] == 'Console'){
+        button.addEventListener('click', () => {
+          let action = words[1].toLowerCase();
+          let parameter = action;
+          if (action == 'assert'){
+            parameter = action != action;
+          }
+          if (action == 'group'){
+            if (words[2] == 'End'){
+              action = 'groupEnd';
+              parameter = '';
+            }
+          }
+          if (action == 'dirxml' || action == 'dir'){
+            parameter = button;
+          }
+          if (action == 'table'){
+            parameter = errorBtns;
+          }
+          eval(`console.${action}(parameter)`);
+        });
+      }
+      else if (words[1] == 'Timer'){
+        button.addEventListener('click', () => {
+          if (words[0] == 'Start'){
+            console.time('timer');
+          }
+          else {
+            console.timeEnd('timer');
+          }
+
+        });
+
+      }
+
+    
+
+
+    });
   </script>
 </body>
 
