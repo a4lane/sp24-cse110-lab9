@@ -88,6 +88,15 @@
   </main>
 
   <script>
+
+// Custom Error class (per step 4)
+class NonNumericError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = 'NonNumericError';
+      }
+}
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       try {
@@ -96,18 +105,31 @@
         let firstNum = document.querySelector('#first-num').value;
         let secondNum = document.querySelector('#second-num').value;
         let operator = document.querySelector('#operator').value;
-        if (operator == '/'){
-          throw new Error('I do not like division!!!');
+      
+        if (isNaN(firstNum) || isNaN(secondNum)) {
+          throw new NonNumericError('Both inputs must be numeric!');
         }
+
+        if (operator == '/'){
+          
+          throw new Error('I do not like division!!!');
+         
+        }
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
       } catch (err){
+        let output = document.querySelector('output');
         alert(err.name);
         alert(err.message);
+        output.innerHTML = '';
       } finally {
+        console.log('Calculation attempt finished.');
+        /*
         let output = document.querySelector('output');
         let firstNum = document.querySelector('#first-num').value;
         let secondNum = document.querySelector('#second-num').value;
         let operator = document.querySelector('#operator').value;
         output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+        */
       }
     });
 
