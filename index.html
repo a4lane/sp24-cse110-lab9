@@ -47,8 +47,16 @@
       width: 122px;
     }
   </style>
+  <!-- Install TrackJS Agent -->
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({
+      token:  "6d4ae5ded3e04b58a217aff1b80ff113"
+    });
+  </script>
 </head>
 
+                        
 <body>
   <main>
     <form>
@@ -82,20 +90,18 @@
       <button>Console Table</button>
       <button>Start Timer</button>
       <button>End Timer</button>
-      <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button id="trigger-error">Trigger a Global Error</button>
     </section>
   </main>
 
   <script>
-
-// Custom Error class (per step 4)
-class NonNumericError extends Error {
+   
+    class NonNumericError extends Error {
       constructor(message) {
         super(message);
         this.name = 'NonNumericError';
       }
-}
+    }
 
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
@@ -105,79 +111,78 @@ class NonNumericError extends Error {
         let firstNum = document.querySelector('#first-num').value;
         let secondNum = document.querySelector('#second-num').value;
         let operator = document.querySelector('#operator').value;
-      
+
         if (isNaN(firstNum) || isNaN(secondNum)) {
           throw new NonNumericError('Both inputs must be numeric!');
         }
 
-        if (operator == '/'){
-          
+        if (operator == '/') {
           throw new Error('I do not like division!!!');
-         
         }
         output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-      } catch (err){
+      } catch (err) {
         let output = document.querySelector('output');
         alert(err.name);
         alert(err.message);
         output.innerHTML = '';
       } finally {
         console.log('Calculation attempt finished.');
-        /*
-        let output = document.querySelector('output');
-        let firstNum = document.querySelector('#first-num').value;
-        let secondNum = document.querySelector('#second-num').value;
-        let operator = document.querySelector('#operator').value;
-        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-        */
       }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+
+    
+    window.onerror = function (message, source, lineno, colno, error) {
+      console.log('Global error caught:', message);
+   
+      return true;
+    };
 
     // Start your code here
     // You may move this JS to another file if you wish
     errorBtns.forEach((button) => {
       const text = button.innerText;
       const words = text.split(" ");
-      if (words[0] == 'Console'){
+      if (words[0] == 'Console') {
         button.addEventListener('click', () => {
           let action = words[1].toLowerCase();
           let parameter = action;
-          if (action == 'assert'){
+          if (action == 'assert') {
             parameter = action != action;
           }
-          if (action == 'group'){
-            if (words[2] == 'End'){
+          if (action == 'group') {
+            if (words[2] == 'End') {
               action = 'groupEnd';
               parameter = '';
             }
           }
-          if (action == 'dirxml' || action == 'dir'){
+          if (action == 'dirxml' || action == 'dir') {
             parameter = button;
           }
-          if (action == 'table'){
+          if (action == 'table') {
             parameter = errorBtns;
           }
           eval(`console.${action}(parameter)`);
         });
       }
-      else if (words[1] == 'Timer'){
+      else if (words[1] == 'Timer') {
         button.addEventListener('click', () => {
-          if (words[0] == 'Start'){
+          if (words[0] == 'Start') {
             console.time('timer');
           }
           else {
             console.timeEnd('timer');
           }
-
         });
-
       }
+    });
 
-    
-
-
+    // trigger global error
+    document.getElementById('trigger-error').addEventListener('click', () => {
+      TrackJS.track('Testing TrackJS!');
+                        
+      nonExistentFunction();
     });
   </script>
 </body>
